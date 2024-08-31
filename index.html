@@ -1,83 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebAR Fireworks</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/master/aframe/build/aframe-ar.js"></script>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
-        #shootButton {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 25px;
-            background-color: #FF6347;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 18px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
-    <!-- A-Frame Scene without marker -->
-    <a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
-        <!-- カメラを配置 -->
-        <a-entity camera></a-entity>
-
-        <!-- 花火のエンティティ（初期は非表示） -->
-        <a-entity id="firework" position="0 0 -5" visible="false">
-            <a-sphere radius="0.5"></a-sphere>
-        </a-entity>
-    </a-scene>
-
-    <!-- 花火を打ち上げるボタン -->
-    <button id="shootButton">Shoot Firework</button>
-
-    <script>
-        // ボタンが押されたときに花火を表示し、色をランダムに設定する
-        document.getElementById('shootButton').addEventListener('click', function() {
-            const firework = document.getElementById('firework');
-
-            // 花火を表示
-            firework.setAttribute('visible', 'true');
-
-            // ランダムな色を生成
-            const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-            firework.setAttribute('material', 'color', randomColor);
-
-            // 花火のアニメーション（スケールアップとフェードアウト）
-            firework.setAttribute('animation__scale', {
-                property: 'scale',
-                to: '3 3 3',
-                dur: 1000,
-                easing: 'easeInOutQuad',
-                loop: false
-            });
-
-            firework.setAttribute('animation__opacity', {
-                property: 'material.opacity',
-                to: 0,
-                dur: 1000,
-                delay: 1000,
-                easing: 'easeInOutQuad',
-                loop: false
-            });
-
-            // 2秒後に花火を再び非表示にする
-            setTimeout(() => {
-                firework.setAttribute('visible', 'false');
-                firework.setAttribute('scale', '1 1 1');  // スケールを元に戻す
-                firework.setAttribute('material', 'opacity', 1);  // 透明度を元に戻す
-            }, 2000);
-        });
-    </script>
-</body>
-</html>
+<a-scene vr-mode-ui="enabled: false">
+    <a-sky color="skyblue"></a-sky>
+    <a-box
+      id="box"
+      position="0 0 -5"
+      color="white"
+      animation="property: rotation; from: 0 0 0; to: 0 360 360; dur: 3000; loop: true; easing: linear; startEvents: btnPush"
+    ></a-box>
+    <a-entity camera></a-entity>
+  </a-scene>
+  <button id="btn" class="btn">🍰</button>
+  
