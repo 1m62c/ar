@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebAR Fireworks</title>
+    <!-- A-Frameの読み込み -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <!-- AR.jsの読み込み -->
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        #shootButton {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background-color: #FF6347;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            opacity: 0.8;
+        }
+        #shootButton:active {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- ARシーン -->
+    <a-scene
+        embedded
+        vr-mode-ui="enabled: false"
+        renderer="colorManagement: true; antialias: true;"
+        arjs="sourceType: webcam; debugUIEnabled: false; trackingMethod: best;">
+        
+        <!-- カメラ -->
+        <a-entity camera></a-entity>
+    </a-scene>
+
+    <!-- 花火を発射するボタン -->
+    <button id="shootButton">花火を打ち上げる</button>
+
+    <script>
+        // 花火を発射する関数
+        function shootFirework() {
+            const scene = document.querySelector('a-scene');
+            const camera = document.querySelector('[camera]');
+            
+            // カメラの位置と方向を取得
+            const cameraEl = camera.object3D;
+            const position = new THREE.Vector3();
+            cameraEl.getWorldPosition(position);
+            
+            const direction = new THREE.Vector3();
+            cameraEl.getWorldDirection(direction);
+            
+            // 花火の発射位置（カメラの前方1.5メートル）
+            const fireworkPosition = position.clone().add(direction.clone().multiplyScalar(1.5));
+
+            // ランダムな色を生成
+            const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+
+            // 花火エンティティの作成
+            const firework = document.createElement('a-entity');
+            firework.setAttribute('position', fireworkPosition);
+            firework.setAttribute('scale', '0 0 0');
+            firework.setAttribute('geometry', {
+                primitive: 'sphere',
+                radius: 0.2
+            });
+            firework.setAttribute('material', {
+                color: randomColor,
+                opacity: 1,
+                transparent: true
+            });
+
+            // スケールアニメーション
+            firework.setAttribute('animation__scale', {
+                property: 'scale',
+                to: '2 2 2',
+                dur: 1000,
+                easing: 'easeOutQuad'
+            });
+
+            // フェードアウトアニメーション
+            firework.setAttribute('animation__opacity', {
+                property: 'material.opacity',
+                to: 0,
+                dur: 1000,
+                delay: 1000,
+                easing: 'easeOutQuad'
+            });
+
+            // シーンに追加
+            scene.appendChild(firework);
+
+            // アニメーション終了後に削除
+            setTimeout(() => {
+                firework.parentNode.removeChild(firework);
+            }, 2000);
+        }
+
+        // ボタンにイベントリスナーを追加
+        document.getElementById('shootButton').addEventListener('click', shootFirework);
+    </script>
+</body>
+</html>
